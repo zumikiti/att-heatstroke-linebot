@@ -4,22 +4,22 @@ class LinebotController < ApplicationController
   require 'kconv'
   require 'rexml/document'
 
-    # callbackアクションのCSRFトークン認証を無効
-    protect_from_forgery :except => [:callback]
+  # callbackアクションのCSRFトークン認証を無効
+  protect_from_forgery :except => [:callback]
 
-    def callback
-      body = request.body.read
-      signature = request.env['HTTP_X_LINE_SIGNATURE']
-      unless client.validate_signature(body, signature)
-        error 400 do 'Bad Request' end
-      end
-      events = client.parse_events_from(body)
-      events.each { |event|
-        case event
-          # メッセージが送信された場合の対応（機能①）
-        when Line::Bot::Event::Message
-          case event.type
-            # ユーザーからテキスト形式のメッセージが送られて来た場合
+  def callback
+    body = request.body.read
+    signature = request.env['HTTP_X_LINE_SIGNATURE']
+    unless client.validate_signature(body, signature)
+      error 400 do 'Bad Request' end
+    end
+    events = client.parse_events_from(body)
+    events.each { |event|
+    case event
+      # メッセージが送信された場合の対応（機能①）
+      when Line::Bot::Event::Message
+        case event.type
+          # ユーザーからテキスト形式のメッセージが送られて来た場合
           when Line::Bot::Event::MessageType::Text
             # event.message['text']：ユーザーから送られたメッセージ
             input = event.message['text']
@@ -68,9 +68,14 @@ class LinebotController < ApplicationController
                 word =
                   ["雨だけど元気出していこうね！",
                    "雨に負けずファイト！！",
-                   "雨だけどああたの明るさでみんなを元気にしてあげて(^^)"].sample
+                   "雨だけど、あなたの明るさでみんなを元気にしてあげて(^^)"].sample
                 push =
-                  "今日の天気？\n今日は雨が降りそうだから傘があった方が安心だよ。\n　  6〜12時　#{per06to12}％\n　12〜18時　 #{per12to18}％\n　18〜24時　#{per18to24}％\n#{word}"
+                  "今日の天気？\n
+                  今日は雨が降りそうだから傘があった方が安心だよ。\n
+                  6〜12時　#{per06to12}％\n
+                  12〜18時 #{per12to18}％\n
+                  18〜24時　#{per18to24}％\n
+                  #{word}"
               else
                 word =
                   ["天気もいいから一駅歩いてみるのはどう？(^^)",
@@ -81,7 +86,7 @@ class LinebotController < ApplicationController
                   "今日の天気？\n今日は雨は降らなさそうだよ。\n#{word}"
               end
             end
-            # テキスト以外（画像等）のメッセージが送られた場合
+          # テキスト以外（画像等）のメッセージが送られた場合
           else
             push = "テキスト以外はわからないよ〜(；；)"
           end
@@ -90,12 +95,12 @@ class LinebotController < ApplicationController
             text: push
           }
           client.reply_message(event['replyToken'], message)
-          # LINEお友達追された場合（機能②）
+        # LINEお友達追された場合（機能②）
         when Line::Bot::Event::Follow
           # 登録したユーザーのidをユーザーテーブルに格納
           line_id = event['source']['userId']
           User.create(line_id: line_id)
-          # LINEお友達解除された場合（機能③）
+        # LINEお友達解除された場合（機能③）
         when Line::Bot::Event::Unfollow
           # お友達解除したユーザーのデータをユーザーテーブルから削除
           line_id = event['source']['userId']
