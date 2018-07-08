@@ -10,6 +10,9 @@ task :hour_feed => :environment do
     config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
   }
 
+  API_KEY = ENV["OPENWEATHER_API_KEY"]
+  BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
+
   # urlを指定して、jsonをシンボル化して格納
   url = open( "#{BASE_URL}?q=Tokyo,jp&APPID=#{API_KEY}" )
   res = JSON.parse( url.read , {symbolize_names: true} )
@@ -32,6 +35,14 @@ task :hour_feed => :environment do
 
     push =
       "#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+
+    # メッセージの発信先idを配列で渡す必要があるため、userテーブルよりpluck関数を使ってidを配列で取得
+    user_ids = User.all.pluck(:line_id)
+    message = {
+      type: 'text',
+      text: push
+    }
+    response = client.multicast(user_ids, message)
   end
   "OK"
 end
