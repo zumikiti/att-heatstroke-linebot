@@ -23,8 +23,8 @@ task :hour_scheduller => :environment do
   humidity = res[:main][:humidity]
   puts "湿度： #{humidity}%"
 
-  if temp_max || humidity
-    # temp_maxまたはhumidityがnilでなければ
+  # temp_maxまたはhumidityがnilでなければ
+  if temp_max > 33 || humidity > 80
     if temp_max > 33 && humidity > 80
       word1 = "今、気温も湿度も高いね。"
     else temp_max > 33 && humidity <= 80
