@@ -1,5 +1,5 @@
 desc "This task is called by the Heroku scheduler add-on"
-task :hour_update => :environment do
+task :update_hour => :environment do
   require 'line/bot'  # gem 'line-bot-api'
   require 'open-uri'
   require 'kconv'
