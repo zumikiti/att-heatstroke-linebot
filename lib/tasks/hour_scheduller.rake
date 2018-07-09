@@ -27,9 +27,9 @@ task :hour_scheduller => :environment do
   if temp_max > 33 || humidity > 80
     if temp_max > 33 && humidity > 80
       word1 = "今、気温も湿度も高いね。"
-    elsif temp_max > 33 && humidity <= 80
+    elsif temp_max > 33
       word1 = "今、とても気温が高いね"
-    elsif temp_max <= 32 && humidity > 80
+    elsif humidity > 80
       word1 = "今、気温はそこそこだけど、湿度が高いくてむす無視するね"
     end
 
