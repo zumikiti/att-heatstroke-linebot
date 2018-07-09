@@ -1,24 +1,6 @@
-# README
+# 熱中症対策ボット
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+1時間ごとに気温や湿度を監視して、熱中症の危険がある場合に注意喚起のMSGをLINEで通知します。
+訪問の仕事をしている相方のために作成。
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+他にも、外回りや高齢者の方にも役に立つ？かも
