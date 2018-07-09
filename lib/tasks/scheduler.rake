@@ -44,5 +44,5 @@ task :update_feed => :environment do
     }
     response = client.multicast(user_ids, message)
   end
-  puts "OK"
+  puts "OK heroku"
 end
