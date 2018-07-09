@@ -18,10 +18,11 @@ task :update_hour => :environment do
   res = JSON.parse( url.read , {symbolize_names: true} )
 
   # 最高気温（main > temp_max）を取得
-  temp_max = res[:main][:temp_max].to_i - 273.15
-  #puts "気温： #{temp_max - 273.15}度"
+  temp_max = res[:main][:temp_max].to_i - 273
   humidity = res[:main][:humidity].to_i
-  #puts "湿度： #{humidity}%"
+
+  # logデバック用
+  puts "気温： #{temp_max}度, 湿度： #{humidity}%"
 
   # temp_maxまたはhumidityがnilでなければ
   if temp_max > 33 || humidity > 80
