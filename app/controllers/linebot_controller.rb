@@ -30,29 +30,32 @@ class LinebotController < ApplicationController
             # 当日朝のメッセージの送信の下限値は20％としているが、明日・明後日雨が降るかどうかの下限値は30％としている
             min_per = 30
             case input
-              # 「明日」or「あした」というワードが含まれる場合
+            # 「今日」or「きょう」というメッセージが含まれる場合
+            when /.*(今日|きょう).*/
+              weather = doc.elements[xpath + 'info[1]/weather'].Text
+              celsius_max = doc.elements[xpath + 'info[1]/temperature/range[1]'].Text
+              celsius_min = doc.elements[xpath + 'info[1]/temperature/range[2]'].Text
+              if weather || celsius_max || celsius_min
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
+                push ="今日の天気の天気だよ。\n#{fix_word}』"
+              end
+            # 「明日」or「あした」というワードが含まれる場合
             when /.*(明日|あした).*/
               # info[2]：明日の天気
-              per06to12 = doc.elements[xpath + 'info[2]/rainfallchance/period[2]'].text
-              per12to18 = doc.elements[xpath + 'info[2]/rainfallchance/period[3]'].text
-              per18to24 = doc.elements[xpath + 'info[2]/rainfallchance/period[4]'].text
-              if per06to12.to_i >= min_per || per12to18.to_i >= min_per || per18to24.to_i >= min_per
-                push =
-                  "明日の天気だよね。\n明日は雨が降りそうだよ(>_<)\n今のところ降水確率はこんな感じだよ。\n　  6〜12時　#{per06to12}％\n　12〜18時　 #{per12to18}％\n　18〜24時　#{per18to24}％\nまた明日の朝の最新の天気予報で雨が降りそうだったら教えるね！"
-              else
-                push =
-                  "明日の天気？\n明日は雨が降らない予定だよ(^^)\nまた明日の朝の最新の天気予報で雨が降りそうだったら教えるね！"
+              weather = doc.elements[xpath + 'info[2]/weather'].Text
+              celsius_max = doc.elements[xpath + 'info[2]/temperature/range[1]'].Text
+              celsius_min = doc.elements[xpath + 'info[2]/temperature/range[2]'].Text
+              if weather || celsius_max || celsius_min
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
+                push ="今日の天気の天気だよ。\n#{fix_word}』"
               end
             when /.*(明後日|あさって).*/
-              per06to12 = doc.elements[xpath + 'info[3]/rainfallchance/period[2]l'].text
-              per12to18 = doc.elements[xpath + 'info[3]/rainfallchance/period[3]l'].text
-              per18to24 = doc.elements[xpath + 'info[3]/rainfallchance/period[4]l'].text
-              if per06to12.to_i >= min_per || per12to18.to_i >= min_per || per18to24.to_i >= min_per
-                push =
-                  "明後日の天気だよね。\n何かあるのかな？\n明後日は雨が降りそう…\n当日の朝に雨が降りそうだったら教えるからね！"
-              else
-                push =
-                  "明後日の天気？\n気が早いねー！何かあるのかな。\n明後日は雨は降らない予定だよ(^^)\nまた当日の朝の最新の天気予報で雨が降りそうだったら教えるからね！"
+              weather = doc.elements[xpath + 'info[3]/weather'].Text
+              celsius_max = doc.elements[xpath + 'info[3]/temperature/range[1]'].Text
+              celsius_min = doc.elements[xpath + 'info[3]/temperature/range[2]'].Text
+              if weather || celsius_max || celsius_min
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
+                push ="今日の天気の天気だよ。\n#{fix_word}』"
               end
             when /.*(かわいい|可愛い|カワイイ|きれい|綺麗|キレイ|素敵|ステキ|すてき|面白い|おもしろい|ありがと|すごい|スゴイ|スゴい|好き|頑張|がんば|ガンバ).*/
               push =
@@ -61,30 +64,33 @@ class LinebotController < ApplicationController
               push =
                 "こんにちは。\n声をかけてくれてありがとう\n今日があなたにとっていい日になりますように(^^)"
             else
-              per06to12 = doc.elements[xpath + 'info/rainfallchance/period[2]l'].text
-              per12to18 = doc.elements[xpath + 'info/rainfallchance/period[3]l'].text
-              per18to24 = doc.elements[xpath + 'info/rainfallchance/period[4]l'].text
-              if per06to12.to_i >= min_per || per12to18.to_i >= min_per || per18to24.to_i >= min_per
-                word =
-                  ["雨だけど元気出していこうね！",
-                   "雨に負けずファイト！！",
-                   "雨だけど、あなたの明るさでみんなを元気にしてあげて(^^)"].sample
+              # 現在の天気、気温、湿度を返す。
+              API_KEY = ENV["OPENWEATHER_API_KEY"]
+              BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
+              url = open( "#{BASE_URL}?q=Tokyo,jp&APPID=#{API_KEY}" )
+              res = JSON.parse( url.read , {symbolize_names: true} )
+              weather_icon = res[:weather][0][:icon].to_s
+              temp_max = res[:main][:temp_max].to_i - 273
+              humidity = res[:main][:humidity].to_i
+
+              # weather_iconを文字に変換
+              # 参考：https://www.sglabs.jp/openweathermap-api/
+              weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨",
+                 "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧" }
+              weather = weather_has[weather_icon]
+
+              # temp_maxまたはhumidityがnilでなければ
+              if temp_max > 33 || humidity > 80
+                if temp_max > 33 && humidity > 80
+                  word1 = "今、気温も湿度も高いね。"
+                elsif temp_max > 33
+                  word1 = "今、とても気温が高いね"
+                elsif humidity > 80
+                  word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
+                end
+
                 push =
-                  "今日の天気？\n
-                  今日は雨が降りそうだから傘があった方が安心だよ。\n
-                  6〜12時　#{per06to12}％\n
-                  12〜18時 #{per12to18}％\n
-                  18〜24時　#{per18to24}％\n
-                  #{word}"
-              else
-                word =
-                  ["天気もいいから一駅歩いてみるのはどう？(^^)",
-                   "今日会う人のいいところを見つけて是非その人に教えてあげて(^^)",
-                   "素晴らしい一日になりますように(^^)",
-                   "雨が降っちゃったらごめんね(><)"].sample
-                push =
-                  "今日の天気？\n今日は雨は降らなさそうだよ。\n#{word}"
-              end
+                  "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
             end
           # テキスト以外（画像等）のメッセージが送られた場合
           else
