@@ -98,7 +98,6 @@ class LinebotController < ApplicationController
 
               push =
                 "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
-              end
             end
           # テキスト以外（画像等）のメッセージが送られた場合
           else
