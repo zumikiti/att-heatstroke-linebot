@@ -36,9 +36,9 @@ class LinebotController < ApplicationController
             case input
             # 「今日」or「きょう」というメッセージが含まれる場合
             when /.*(今日|きょう).*/
-              weather = doc.elements[xpath + 'info[1]/weather'].Text
-              celsius_max = doc.elements[xpath + 'info[1]/temperature/range[1]'].Text
-              celsius_min = doc.elements[xpath + 'info[1]/temperature/range[2]'].Text
+              weather = doc.elements[xpath + 'info[1]/weather'].text
+              celsius_max = doc.elements[xpath + 'info[1]/temperature/range[1]'].text
+              celsius_min = doc.elements[xpath + 'info[1]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
                 fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
                 push ="今日の天気の天気だよ。\n#{fix_word}』"
@@ -46,17 +46,17 @@ class LinebotController < ApplicationController
             # 「明日」or「あした」というワードが含まれる場合
             when /.*(明日|あした).*/
               # info[2]：明日の天気
-              weather = doc.elements[xpath + 'info[2]/weather'].Text
-              celsius_max = doc.elements[xpath + 'info[2]/temperature/range[1]'].Text
-              celsius_min = doc.elements[xpath + 'info[2]/temperature/range[2]'].Text
+              weather = doc.elements[xpath + 'info[2]/weather'].text
+              celsius_max = doc.elements[xpath + 'info[2]/temperature/range[1]'].text
+              celsius_min = doc.elements[xpath + 'info[2]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
                 fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
                 push ="今日の天気の天気だよ。\n#{fix_word}』"
               end
             when /.*(明後日|あさって).*/
-              weather = doc.elements[xpath + 'info[3]/weather'].Text
-              celsius_max = doc.elements[xpath + 'info[3]/temperature/range[1]'].Text
-              celsius_min = doc.elements[xpath + 'info[3]/temperature/range[2]'].Text
+              weather = doc.elements[xpath + 'info[3]/weather'].text
+              celsius_max = doc.elements[xpath + 'info[3]/temperature/range[1]'].text
+              celsius_min = doc.elements[xpath + 'info[3]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
                 fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
                 push ="今日の天気の天気だよ。\n#{fix_word}』"
