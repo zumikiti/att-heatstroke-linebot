@@ -40,8 +40,8 @@ class LinebotController < ApplicationController
               celsius_max = doc.elements[xpath + 'info[1]/temperature/range[1]'].text
               celsius_min = doc.elements[xpath + 'info[1]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
-                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
-                push ="今日の天気の天気だよ。\n#{fix_word}』"
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}度"
+                push ="今日の天気だよ。\n#{fix_word}"
               end
             # 「明日」or「あした」というワードが含まれる場合
             when /.*(明日|あした).*/
@@ -50,16 +50,16 @@ class LinebotController < ApplicationController
               celsius_max = doc.elements[xpath + 'info[2]/temperature/range[1]'].text
               celsius_min = doc.elements[xpath + 'info[2]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
-                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
-                push ="今日の天気の天気だよ。\n#{fix_word}』"
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}度"
+                push ="明日の天気だよ。\n#{fix_word}"
               end
             when /.*(明後日|あさって).*/
               weather = doc.elements[xpath + 'info[3]/weather'].text
               celsius_max = doc.elements[xpath + 'info[3]/temperature/range[1]'].text
               celsius_min = doc.elements[xpath + 'info[3]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
-                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}"
-                push ="今日の天気の天気だよ。\n#{fix_word}』"
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}度"
+                push ="明後日の天気だよ。\n#{fix_word}"
               end
             when /.*(かわいい|可愛い|カワイイ|きれい|綺麗|キレイ|素敵|ステキ|すてき|面白い|おもしろい|ありがと|すごい|スゴイ|スゴい|好き|頑張|がんば|ガンバ).*/
               push =
