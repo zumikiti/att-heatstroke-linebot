@@ -77,22 +77,22 @@ class LinebotController < ApplicationController
 
               # weather_iconを文字に変換
               # 参考：https://www.sglabs.jp/openweathermap-api/
-              weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨",
-                 "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧" }
-              weather = weather_has[weather_icon]
-
-              # temp_maxまたはhumidityがnilでなければ
-              if temp_max > 33 || humidity > 80
-                if temp_max > 33 && humidity > 80
-                  word1 = "今、気温も湿度も高いね。"
-                elsif temp_max > 33
-                  word1 = "今、とても気温が高いね"
-                elsif humidity > 80
-                  word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
-                end
-
-                push =
-                  "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+              # weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨",
+              #    "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧" }
+              # weather = weather_has[weather_icon]
+              #
+              # # temp_maxまたはhumidityがnilでなければ
+              # if temp_max > 33 || humidity > 80
+              #   if temp_max > 33 && humidity > 80
+              #     word1 = "今、気温も湿度も高いね。"
+              #   elsif temp_max > 33
+              #     word1 = "今、とても気温が高いね"
+              #   elsif humidity > 80
+              #     word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
+              #   end
+              #
+              #   push =
+              #     "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
             end
           # テキスト以外（画像等）のメッセージが送られた場合
           else
