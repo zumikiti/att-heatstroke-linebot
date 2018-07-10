@@ -81,18 +81,19 @@ class LinebotController < ApplicationController
                  "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧" }
               weather = weather_has[weather_icon]
 
-              # # temp_maxまたはhumidityがnilでなければ
-              # if temp_max > 33 || humidity > 80
-              #   if temp_max > 33 && humidity > 80
-              #     word1 = "今、気温も湿度も高いね。"
-              #   elsif temp_max > 33
-              #     word1 = "今、とても気温が高いね"
-              #   elsif humidity > 80
-              #     word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
-              #   end
-              #
-              #   push =
-              #     "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+              # temp_maxまたはhumidityがnilでなければ
+              if temp_max > 33 || humidity > 80
+                if temp_max > 33 && humidity > 80
+                  word1 = "今、気温も湿度も高いね。"
+                elsif temp_max > 33
+                  word1 = "今、とても気温が高いね"
+                elsif humidity > 80
+                  word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
+                end
+
+                push =
+                  "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+              end
             end
           # テキスト以外（画像等）のメッセージが送られた場合
           else
