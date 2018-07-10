@@ -10,8 +10,8 @@ class LinebotController < ApplicationController
   def callback
     body = request.body.read
     signature = request.env['HTTP_X_LINE_SIGNATURE']
-    API_KEY = ENV["OPENWEATHER_API_KEY"]
-    BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
+    # API_KEY = ENV["OPENWEATHER_API_KEY"]
+    # BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
     unless client.validate_signature(body, signature)
       error 400 do 'Bad Request' end
     end
