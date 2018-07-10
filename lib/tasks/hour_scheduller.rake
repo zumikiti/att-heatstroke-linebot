@@ -15,7 +15,7 @@ task :update_hour => :environment do
   BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
   # 定期実行を日本時間；9時〜21時に限定。UTC；0時〜12時
-  time = Datetime.now
+  time = DateTime.now
   hour = time.hour
   if hour >= 9 && hour <= 12
     # urlを指定して、jsonをシンボル化して格納
