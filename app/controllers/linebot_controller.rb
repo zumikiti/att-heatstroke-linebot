@@ -89,14 +89,15 @@ class LinebotController < ApplicationController
                   word1 = "今、とても気温が高いね"
                 elsif humidity > 80
                   word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
-                else
-                  word1 = "気温も湿度も落ち着いてるけど、注意してね。"
                 end
+              else
+                word1 = "気温も湿度も落ち着いてるけど、注意してね。"
+              end
 
-                puts "天気：#{weather}, 気温：#{temp_max}, 湿度：#{humidity}"
+              puts "天気：#{weather}, 気温：#{temp_max}, 湿度：#{humidity}"
 
-                push =
-                  "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+              push =
+                "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
               end
             end
           # テキスト以外（画像等）のメッセージが送られた場合
