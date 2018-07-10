@@ -31,11 +31,11 @@ task :update_hour => :environment do
     elsif temp_max > 33
       word1 = "今、とても気温が高いね"
     elsif humidity > 80
-      word1 = "今、気温はそこそこだけど、湿度が高いくてむす無視するね"
+      word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
     end
 
     push =
-      "#{word1}\n気温： #{temp_max - 273.15}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+      "#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
 
     # メッセージの発信先idを配列で渡す必要があるため、userテーブルよりpluck関数を使ってidを配列で取得
     user_ids = User.all.pluck(:line_id)
