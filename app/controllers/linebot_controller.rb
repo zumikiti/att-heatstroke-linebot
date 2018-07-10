@@ -29,6 +29,9 @@ class LinebotController < ApplicationController
             xpath = 'weatherforecast/pref/area[4]/'
             # 当日朝のメッセージの送信の下限値は20％としているが、明日・明後日雨が降るかどうかの下限値は30％としている
             min_per = 30
+
+            puts "MSG受け取った。"
+
             case input
             # 「今日」or「きょう」というメッセージが含まれる場合
             when /.*(今日|きょう).*/
