@@ -30,12 +30,14 @@ task :update_hour => :environment do
     puts "気温： #{temp_max}度, 湿度： #{humidity}%"
 
     # temp_maxまたはhumidityがnilでなければ
-    if temp_max > 33 || humidity > 80
-      if temp_max > 33 && humidity > 80
+    if temp_max >= 30 || humidity >= 80
+      if temp_max >= 30 && humidity >= 80
         word1 = "今、気温も湿度も高いね。"
-      elsif temp_max > 33
+      elsif temp_max >= 33
         word1 = "今、とても気温が高いね"
-      elsif humidity > 80
+      elsif temp_max >= 30
+        word1 = "今、気温が高いね"
+      elsif humidity >= 80
         word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
       end
 
