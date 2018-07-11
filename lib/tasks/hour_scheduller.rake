@@ -17,7 +17,7 @@ task :update_hour => :environment do
   # 定期実行を日本時間；9時〜21時に限定。UTC；0時〜12時
   time = DateTime.now
   hour = time.hour
-  if hour >= 9 && hour <= 12
+  if hour >= 0 && hour <= 12
     # urlを指定して、jsonをシンボル化して格納
     url = open( "#{BASE_URL}?q=Tokyo,jp&APPID=#{API_KEY}" )
     res = JSON.parse( url.read , {symbolize_names: true} )
