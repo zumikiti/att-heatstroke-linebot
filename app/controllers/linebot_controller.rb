@@ -6,8 +6,6 @@ class LinebotController < ApplicationController
 
   # callbackアクションのCSRFトークン認証を無効
   protect_from_forgery :except => [:callback]
-  API_KEY = ENV["OPENWEATHER_API_KEY"]
-  BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
   def callback
     body = request.body.read
     signature = request.env['HTTP_X_LINE_SIGNATURE']
@@ -28,8 +26,6 @@ class LinebotController < ApplicationController
             xml  = open( url ).read.toutf8
             doc = REXML::Document.new(xml)
             xpath = 'weatherforecast/pref/area[4]/'
-            # 当日朝のメッセージの送信の下限値は20％としているが、明日・明後日雨が降るかどうかの下限値は30％としている
-            min_per = 30
 
             puts "MSG受け取った。"
 
@@ -40,7 +36,6 @@ class LinebotController < ApplicationController
               celsius_max = doc.elements[xpath + 'info[1]/temperature/range[1]'].text
               celsius_min = doc.elements[xpath + 'info[1]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
-                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}度"
                 push ="今日の天気だよ。\n#{fix_word}"
               end
             # 「明日」or「あした」というワードが含まれる場合
@@ -68,41 +63,8 @@ class LinebotController < ApplicationController
               push =
                 "こんにちは。\n声をかけてくれてありがとう\n今日があなたにとっていい日になりますように(^^)"
             else
-              # 現在の天気、気温、湿度を返す。
-              url = open( "#{BASE_URL}?q=Tokyo,jp&APPID=#{API_KEY}" )
-              res = JSON.parse( url.read , {symbolize_names: true} )
-              weather_icon = res[:weather][0][:icon].to_s
-              temp_max = res[:main][:temp_max].to_i - 273
-              humidity = res[:main][:humidity].to_i
+              push = get_openweathermap()
 
-              # weather_iconを文字に変換
-              # 参考：https://www.sglabs.jp/openweathermap-api/
-              puts "weather_icon: #{weather_icon}"
-              weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨", "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧"}
-              weather = weather_has[weather_icon]
-              puts "weather: #{weather_has}"
-
-              # temp_maxまたはhumidityがnilでなければ
-              if temp_max >= 30 || humidity >= 80
-                if temp_max >= 30 && humidity >= 80
-                  word1 = "今、気温も湿度も高いね。"
-                elsif temp_max >= 33
-                  word1 = "今、とても気温が高いね"
-                elsif temp_max >= 30
-                  word1 = "今、気温が高いね"
-                elsif humidity >= 80
-                  word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
-                end
-                word2 = "こまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
-              else
-                word1 = "気温も湿度も落ち着いてるけど、注意してね。"
-                word2 = "今日があなたにとっていい日になりますように（^^）"
-              end
-
-              puts "天気：#{weather}, 気温：#{temp_max}, 湿度：#{humidity}"
-
-              push =
-                "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\n#{word2}"
             end
           # テキスト以外（画像等）のメッセージが送られた場合
           else
@@ -136,4 +98,45 @@ class LinebotController < ApplicationController
         config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
       }
     end
+
+    def get_openweathermap()
+        API_KEY = ENV["OPENWEATHER_API_KEY"]
+        BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
+
+        # 現在の天気、気温、湿度を返す。
+        url = open( "#{BASE_URL}?q=Tokyo,jp&APPID=#{API_KEY}" )
+        res = JSON.parse( url.read , {symbolize_names: true} )
+        weather_icon = res[:weather][0][:icon].to_s
+        temp_max = res[:main][:temp_max].to_i - 273
+        humidity = res[:main][:humidity].to_i
+
+        # weather_iconを文字に変換
+        # 参考：https://www.sglabs.jp/openweathermap-api/
+        puts "weather_icon: #{weather_icon}"
+        weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨", "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧"}
+        weather = weather_has[weather_icon]
+        puts "weather: #{weather_has}"
+
+        # temp_maxまたはhumidityがnilでなければ
+        if temp_max >= 30 || humidity >= 80
+          if temp_max >= 30 && humidity >= 80
+            word1 = "今、気温も湿度も高いね。"
+          elsif temp_max >= 33
+            word1 = "今、とても気温が高いね"
+          elsif temp_max >= 30
+            word1 = "今、気温が高いね"
+          elsif humidity >= 80
+            word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
+          end
+          word2 = "こまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+        else
+          word1 = "気温も湿度も落ち着いてるけど、注意してね。"
+          word2 = "今日があなたにとっていい日になりますように（^^）"
+        end
+
+        puts "天気：#{weather}, 気温：#{temp_max}, 湿度：#{humidity}"
+
+        return = "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\n#{word2}"
+
+      end
 end
