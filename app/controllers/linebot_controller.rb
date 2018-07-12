@@ -6,9 +6,9 @@ class LinebotController < ApplicationController
 
   # callbackアクションのCSRFトークン認証を無効
   protect_from_forgery :except => [:callback]
+  API_KEY = ENV["OPENWEATHER_API_KEY"]
+  BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
   def callback
-    API_KEY = ENV["OPENWEATHER_API_KEY"]
-    BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
     body = request.body.read
     signature = request.env['HTTP_X_LINE_SIGNATURE']
     unless client.validate_signature(body, signature)
@@ -28,6 +28,8 @@ class LinebotController < ApplicationController
             xml  = open( url ).read.toutf8
             doc = REXML::Document.new(xml)
             xpath = 'weatherforecast/pref/area[4]/'
+            # 当日朝のメッセージの送信の下限値は20％としているが、明日・明後日雨が降るかどうかの下限値は30％としている
+            min_per = 30
 
             puts "MSG受け取った。"
 
@@ -38,6 +40,7 @@ class LinebotController < ApplicationController
               celsius_max = doc.elements[xpath + 'info[1]/temperature/range[1]'].text
               celsius_min = doc.elements[xpath + 'info[1]/temperature/range[2]'].text
               if weather || celsius_max || celsius_min
+                fix_word = "天気：#{weather}\n最高気温：#{celsius_max}度\n最低気温：#{celsius_min}度"
                 push ="今日の天気だよ。\n#{fix_word}"
               end
             # 「明日」or「あした」というワードが含まれる場合
@@ -75,6 +78,7 @@ class LinebotController < ApplicationController
               # weather_iconを文字に変換
               # 参考：https://www.sglabs.jp/openweathermap-api/
               puts "weather_icon: #{weather_icon}"
+              weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨", "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧"}
               weather = weather_has[weather_icon]
               puts "weather: #{weather_has}"
 
@@ -97,7 +101,8 @@ class LinebotController < ApplicationController
 
               puts "天気：#{weather}, 気温：#{temp_max}, 湿度：#{humidity}"
 
-              push = "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\n#{word2}"
+              push =
+                "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\n#{word2}"
             end
           # テキスト以外（画像等）のメッセージが送られた場合
           else
@@ -131,5 +136,4 @@ class LinebotController < ApplicationController
         config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
       }
     end
-
 end
