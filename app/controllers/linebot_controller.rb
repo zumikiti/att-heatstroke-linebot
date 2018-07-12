@@ -9,7 +9,6 @@ class LinebotController < ApplicationController
   def callback
     API_KEY = ENV["OPENWEATHER_API_KEY"]
     BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
-    weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨", "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧"}
     body = request.body.read
     signature = request.env['HTTP_X_LINE_SIGNATURE']
     unless client.validate_signature(body, signature)
