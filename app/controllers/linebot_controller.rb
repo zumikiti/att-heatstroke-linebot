@@ -72,14 +72,33 @@ class LinebotController < ApplicationController
               url = open( "#{BASE_URL}?q=Tokyo,jp&APPID=#{API_KEY}" )
               res = JSON.parse( url.read , {symbolize_names: true} )
               weather_icon = res[:weather][0][:icon].to_s
+              weather_id = res[:weather][0][:id].to_i
               temp_max = res[:main][:temp_max].to_i - 273
               humidity = res[:main][:humidity].to_i
 
-              # weather_iconを文字に変換
+              # weather_idを文字に変換
               # 参考：https://www.sglabs.jp/openweathermap-api/
               puts "weather_icon: #{weather_icon}"
-              weather_has = {"01d" => "快晴", "02d" => "晴れ", "03d" => "曇り", "04d" => "曇り", "09d" => "小雨", "10d" => "雨", "11d" => "雷雨", "13d" => "雪", "50d" => "霧"}
-              weather = weather_has[weather_icon]
+              puts "weather_id: #{weather_id}"
+              if weather_id == 800
+                weather = "晴天"
+              elsif weather_id == 801
+                weather = "晴れ"
+              elsif weather_id > 801
+                weather = "曇り"
+              elsif weather_id >= 200 && weather_id < 300
+                weather = "雷雨"
+              elsif weather_id >= 300 && weather_id < 400
+                weather = "霧雨"
+              elsif weather_id == 500 || weather_id == 501
+                weather = "雨"
+              elsif weather_id >= 502 && weather_id < 600
+                weather = "大雨"
+              elsif weather_id >= 600 && weather_id < 700
+                weather = "雪"
+              elsif weather_id >= 700 && weather_id < 800
+                weather = "霧"
+              end
               puts "weather: #{weather_has}"
 
               # temp_maxまたはhumidityがnilでなければ
