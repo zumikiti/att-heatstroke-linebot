@@ -99,7 +99,7 @@ class LinebotController < ApplicationController
               elsif weather_id >= 700 && weather_id < 800
                 weather = "霧"
               end
-              puts "weather: #{weather_has}"
+              puts "weather: #{weather}"
 
               # temp_maxまたはhumidityがnilでなければ
               if temp_max >= 30 || humidity >= 80
