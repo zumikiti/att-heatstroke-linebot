@@ -106,16 +106,23 @@ class LinebotController < ApplicationController
 
               # temp_maxまたはhumidityがnilでなければ
               if temp_max >= 30 || humidity >= 80
-                if temp_max >= 30 && humidity >= 80
+                if temp_max >= 33
+                  word1 = "今、とても気温が高いね。\n不要な外出は控えて！"
+                elsif temp_max >= 30 && humidity >= 80
                   word1 = "今、気温も湿度も高いね。"
-                elsif temp_max >= 33
-                  word1 = "今、とても気温が高いね"
                 elsif temp_max >= 30
-                  word1 = "今、気温が高いね"
+                  word1 = "今、気温が高いね。"
                 elsif humidity >= 80
-                  word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
+                  word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね。"
                 end
-                word2 = "こまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+                # weather_idによって対策をメッセージに載せる。
+                if weather_id == 800 || weather_id == 801
+                  word2 = "日差しが強いので、日陰に移動して直射日光を避け、コンクリートやアスファルトの上は避けましょう。\n熱中症にならないように気をつけてね（＞＜）"
+                elsif weather_id > 801
+                  word2 = "日差しが弱くても、熱中症にはなるからね！\n湿度が高いなら屋内だと、除湿機を使ってみましょう。\n外で風が弱ければ、扇子などで風を起こして体温の上昇を防ぎましょう。"
+                else
+                  word2 = "こまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+                end
               else
                 word1 = "気温も湿度も落ち着いてるけど、注意してね。"
                 word2 = "今日があなたにとっていい日になりますように（^^）"
