@@ -14,7 +14,7 @@ task :update_hour => :environment do
   API_KEY = ENV["OPENWEATHER_API_KEY"]
   BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
-  # 定期実行を日本時間；9時〜21時に限定。UTC；0時〜12時
+  # 定期実行を日本時間；9時〜19時に限定。UTC；0時〜10時
   time = DateTime.now
   hour = time.hour
   if hour >= 0 && hour <= 10
@@ -63,8 +63,17 @@ task :update_hour => :environment do
         word1 = "今、気温はそこそこだけど、湿度が高くてムシムシするね"
       end
 
+      # weatherによって対策をメッセージに載せる。
+      if weather_id == 800 || weather_id == 801
+        word2 = "日差しが強いので、日陰に移動して直射日光を避け、コンクリートやアスファルトの上は避けましょう。\n熱中症にならないように気をつけてね（＞＜）"
+      elsif weather_id > 801
+        word2 = "日差しが弱くても、熱中症にはなるからね！\n湿度が高いなら屋内だと、除湿機を使ってみましょう。\n外で風が弱ければ、扇子などで風を起こして体温の上昇を防ぎましょう。"
+      else
+        word2 = "こまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+      end
+
       push =
-        "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\nこまめに水分補給して、熱中症にならないように気をつけてね（＞＜）"
+        "現在の天気は#{weather}だよ。\n#{word1}\n気温： #{temp_max}度\n湿度： #{humidity}%\n#{word2}"
 
       # メッセージの発信先idを配列で渡す必要があるため、userテーブルよりpluck関数を使ってidを配列で取得
       user_ids = User.all.pluck(:line_id)
