@@ -53,6 +53,7 @@ task :update_hour => :environment do
 
     # temp_maxまたはhumidityがnilでなければ
     if temp_max >= 30 || humidity >= 80
+      if temp_max <= 25 break
       if temp_max >= 30 && humidity >= 80
         word1 = "今、気温も湿度も高いね。"
       elsif temp_max >= 33
